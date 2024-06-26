@@ -1,0 +1,68 @@
+// const express = require('express');
+// const Tasked = require ('../model.js');
+
+
+const createTask =  async (req, res) => {
+    try{
+      const task = await Tasked.create(req.body)
+      res.status(200).json({task});
+    }
+    catch (error) {
+        res.status(500).json({error: error.message});
+    }
+ }
+
+const getTask = async (req, res) => {
+    try {
+        const tasks = await Tasked.find();
+        res.status(200).json({tasks});
+    }
+    catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
+//get a single task
+
+const getTaskById = async (req, res) => {
+
+    try{
+
+        const {id} = req.params
+        const task = await Tasked.findById(id)
+
+        if(!task){
+            res.status(404).json("no task with this id:${id}")
+        }
+        res.status(200).json({task});
+
+    }
+    catch (error) {
+        res.status(500).json({msg: error.message});
+    }
+
+}
+
+
+//delete a single task
+
+const deleteTask = async (req, res) =>{
+
+    try{
+        const {id} = req.params
+        const delTask = await Tasked.findAndDelById(id)
+        if(!delTask){
+            res.status(404).json("no task with this id:${id}")
+        }
+        res.status(200).json("deletio operation succesful");
+    }
+    catch (error) {
+        res.status(500).json({msg: error.message});
+    }
+   
+}
+
+
+module.exports ={
+    createTask, getTask, getTaskById,deleteTask
+}
