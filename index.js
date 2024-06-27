@@ -10,7 +10,7 @@ var cookieParser = require('cookie-parser')
 const app = express();
 const cors = require('cors');
 const corsOptions = {
-    origin:[ 'https://skulrecbackendcod.onrender.com', 'http://localhost:3000', 'https://sparkling-baklava-08580f.netlify.app/'|| "*"],
+    origin:["*"],
     credentials: true,            //access-control-allow-credentials:true
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: [
