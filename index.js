@@ -10,7 +10,7 @@ var cookieParser = require('cookie-parser')
 const app = express();
 const cors = require('cors');
 const corsOptions = {
-    origin:["*"],
+    origin: "https://deluxe-paletas-f8c212.netlify.app" ||"*",
     credentials: true,            //access-control-allow-credentials:true
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: [
