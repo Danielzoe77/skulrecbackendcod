@@ -5,7 +5,7 @@ const { creatRecord,updateRecord,getRecords,getRecordsByUser} = require('../cont
 // const Record = require('../models/Record');
 
 
-router.post('/add/', protect, creatRecord);
+router.post('/add/',protect, creatRecord);
 
 //updateRecord
 router.patch('/updateRecord/:id', updateRecord);
