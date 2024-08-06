@@ -19,23 +19,7 @@ const userScheme = mongoose.Schema({
         minLength: [6, "password should be at least 6 characters"],
         maxLength: [12, "password should not be more than 12 characters"],
         select: false
-
     },
-    // photo :{
-    //     type: String,
-    //     required: [false, "please add a photo"],
-
-    // },
-    phone  :{
-        type: String,
-        // default :  "+234"
-        },
-
-    // bio  :{
-    //     type: String,
-    //     maxLength: [250, "The bio should not exceed 250 characters"],
-    //         default : "bio" }
-
 },
 {
     timestamps:true
@@ -54,8 +38,5 @@ userScheme.pre("save", async function (next){
 
 
 } )
-// userScheme.methods.comparePassword = async function(password) {
-//     return await bcrypt.compare(password, this.password)}
-
 const userModel = mongoose.model("Users", userScheme)
 module.exports = userModel;

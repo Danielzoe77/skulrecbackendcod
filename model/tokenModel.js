@@ -18,11 +18,7 @@ createdAt: {
 expiresAt: {
     type: Date,
     require : true,
-   
 }
-
 })
-
 const tokenModel = mongoose.model('Token', tokenSchema);
-
 module.exports = tokenModel
