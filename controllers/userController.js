@@ -110,7 +110,9 @@ const passwordIsCorrect = await bcrypt.compare(password, user.password);
       res.status(400);
       throw new Error("Invalid email or password");
     }
+
     }
+    await token.save();
     
   
   });

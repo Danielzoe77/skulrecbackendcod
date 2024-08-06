@@ -107,9 +107,21 @@ const getRecords = asyncHandler(async (req, res) => {
     }
   });
 
+  const deleteRecord = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const record = await Record.findByIdAndDelete({ _id: id });
+  
+    if (record) {
+      res.json({ message: "Record removed" });
+    } else {
+      res.status(404);
+      throw new Error("Record not found");
+    }
+  });
+
 
 module.exports = {
-    creatRecord,updateRecord,getRecords,getRecordsByUser
+    creatRecord,updateRecord,getRecords,getRecordsByUser,deleteRecord
 }
 
 
