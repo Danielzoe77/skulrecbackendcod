@@ -113,26 +113,6 @@ const getRecords = asyncHandler(async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-  const deleteRecord = asyncHandler(async (req, res) => {
-    const id = req.params.id;
-    const record = await Record.findByIdAndDelete({ _id: id });
-  
-    if (record) {
-      res.json({ message: "Record removed" });
-    } else {
-      res.status(404);
-      throw new Error("Record not found");
-    }
-  });
-
-
-module.exports = {
-    creatRecord,updateRecord,getRecords,getRecordsByUser,deleteRecord
-}
-
-
-=======
 const getRecordsByUser = asyncHandler(async (req, res) => {
   const records = await Record.find({ userId: req.params.id });
 
@@ -183,4 +163,3 @@ module.exports = {
   deleteRecord,
   updateRecordByUser,
 };
->>>>>>> e5515e3761d749547d399b1d4d4a7f3ba146b6ec
