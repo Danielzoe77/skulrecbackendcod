@@ -13,14 +13,14 @@ const generateToken = (id) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { fullname, email, password, confirmPassword } = req.body;
+  const { username, email, password, confirmPassword } = req.body;
 
   //validation
   if (!email) {
     res.status(400);
     throw new Error("please enter all email ");
   }
-  if (!fullname) {
+  if (!username) {
     res.status(400);
     throw new Error("please enter your name ");
   }
@@ -39,7 +39,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   //create user
   const user = await User.create({
-    fullname,
+    username,
     email,
     password,
     confirmPassword: password,
@@ -59,8 +59,8 @@ const registerUser = asyncHandler(async (req, res) => {
   //console.log(res.cookie);
 
   if (user) {
-    const { _id, fullname, email, password } = user;
-    res.status(201).json({ _id, fullname, email, password, token });
+    const { _id, username, email, password } = user;
+    res.status(201).json({ _id, username, email, password, token });
   } else {
     res.status(400);
     throw new Error("Invalid user data");
@@ -106,19 +106,24 @@ const loginUser = asyncHandler(async (req, res) => {
     await tokenDoc.save();
 
     if (user && passwordIsCorrect) {
-      const { _id, fullname, email, password } = user;
-      res.status(201).json({ _id, fullname, email, password, token });
+      const { _id, username, email, password } = user;
+      res.status(201).json({ _id, username, email, password, token });
     } else {
       res.status(400);
       throw new Error("Invalid email or password");
     }
-<<<<<<< HEAD
+  }
+  if (user) {
+    const token = await Token.findOne({ user: user._id });
+    if (!token) {
+      const token = await Token.create({
+        user: user._id,
+        token: crypto.randomBytes(32).toString("hex"),
+      });
 
     }
     await token.save();
     
-  
-=======
   }
 });
 
@@ -129,7 +134,6 @@ const logoutUser = asyncHandler(async (req, res) => {
     expires: new Date(0),
     sameSite: "none",
     secure: true,
->>>>>>> e5515e3761d749547d399b1d4d4a7f3ba146b6ec
   });
 
   return res.status(200).json({ message: "Successfully logged out" });
@@ -144,8 +148,8 @@ const getUser = asyncHandler(async (req, res) => {
   }
   const user = await User.findById(userId);
   if (user) {
-    const { _id, fullname, email } = user;
-    res.status(200).json({ _id, fullname, email });
+    const { _id, username, email } = user;
+    res.status(200).json({ _id, username, email });
   } else {
     res.status(400);
     throw new Error("User not found");
