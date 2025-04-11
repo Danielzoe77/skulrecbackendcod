@@ -6,11 +6,12 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/sendEmail");
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const generateToken = (id, username) => {
+  return jwt.sign({ id, username }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
 };
+
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
@@ -46,7 +47,8 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   //generate token
-  const token = generateToken(user._id);
+  const token = generateToken(user._id, user.username);
+
 
   //send http cookies to frontend
   res.cookie("token", token, {
@@ -68,6 +70,65 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 //login user
+// const loginUser = asyncHandler(async (req, res) => {
+//   const { email, password } = req.body;
+
+//   if (!email || !password) {
+//     res.status(400);
+//     throw new Error("Please input your email and password");
+//   }
+
+//   const user = await User.findOne({ email }).select("+password");
+
+//   if (!user) {
+//     res.status(400);
+//     throw new Error("User cannot be found, please sign up");
+//   } else {
+//     const passwordIsCorrect = await bcrypt.compare(password, user.password);
+
+//     if (!passwordIsCorrect) {
+//       res.status(400);
+//       throw new Error("Invalid password");
+//     }
+
+//     const token = generateToken(user._id);
+
+//     res.cookie("token", token, {
+//       path: "/",
+//       httpOnly: true,
+//       expires: new Date(Date.now() + 1000 * 86400),
+//       sameSite: "none",
+//       secure: true,
+//     });
+//     // console.log(res.cookie('token'));
+//     const tokenDoc = new Token({
+//       token,
+//       user: user.id,
+//     });
+//     await tokenDoc.save();
+
+//     if (user && passwordIsCorrect) {
+//       const { _id, username, email, password } = user;
+//       res.status(201).json({ _id, username, email, password, token });
+//     } else {
+//       res.status(400);
+//       throw new Error("Invalid email or password");
+//     }
+//   }
+//   if (user) {
+//     const token = await Token.findOne({ user: user._id });
+//     if (!token) {
+//       const token = await Token.create({
+//         user: user._id,
+//         token: crypto.randomBytes(32).toString("hex"),
+//       });
+
+//     }
+//     await token.save();
+    
+//   }
+// });
+
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -81,51 +142,33 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!user) {
     res.status(400);
     throw new Error("User cannot be found, please sign up");
-  } else {
-    const passwordIsCorrect = await bcrypt.compare(password, user.password);
-
-    if (!passwordIsCorrect) {
-      res.status(400);
-      throw new Error("Invalid password");
-    }
-
-    const token = generateToken(user._id);
-
-    res.cookie("token", token, {
-      path: "/",
-      httpOnly: true,
-      expires: new Date(Date.now() + 1000 * 86400),
-      sameSite: "none",
-      secure: true,
-    });
-    // console.log(res.cookie('token'));
-    const tokenDoc = new Token({
-      token,
-      user: user.id,
-    });
-    await tokenDoc.save();
-
-    if (user && passwordIsCorrect) {
-      const { _id, username, email, password } = user;
-      res.status(201).json({ _id, username, email, password, token });
-    } else {
-      res.status(400);
-      throw new Error("Invalid email or password");
-    }
   }
-  if (user) {
-    const token = await Token.findOne({ user: user._id });
-    if (!token) {
-      const token = await Token.create({
-        user: user._id,
-        token: crypto.randomBytes(32).toString("hex"),
-      });
 
-    }
-    await token.save();
-    
+  const passwordIsCorrect = await bcrypt.compare(password, user.password);
+
+  if (!passwordIsCorrect) {
+    res.status(400);
+    throw new Error("Invalid password");
   }
+
+  const token = generateToken(user._id, user.username);
+
+
+  res.cookie("token", token, {
+    path: "/",
+    httpOnly: true,
+    expires: new Date(Date.now() + 1000 * 86400), // 1 day
+    sameSite: "none",
+    secure: true,
+  });
+
+  await Token.create({ token, user: user._id  }); // No need to manually save
+
+  const { _id, username, email: userEmail, password: userPassword } = user;
+  return res.status(201).json({ _id, username, email: userEmail, password: userPassword, token });
+
 });
+
 
 const logoutUser = asyncHandler(async (req, res) => {
   res.cookie("token", "", {
